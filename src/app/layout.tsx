@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { UserContextProvider } from "./context/userContext";
+import { RouterProvider } from "./context/routerContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +23,9 @@ export default function RootLayout({
       <body>
         <Header />
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-[#1f6892] to-[#678197]">
-          {children}
+          <RouterProvider>
+            <UserContextProvider>{children}</UserContextProvider>
+          </RouterProvider>
         </div>
         <Footer />
       </body>

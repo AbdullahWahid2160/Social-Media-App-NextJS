@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import supabase from "../../../src/app/utils/supabase"; // Import your Supabase client
+import supabase from "../../../src/utils/supabase"; // Import your Supabase client
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {

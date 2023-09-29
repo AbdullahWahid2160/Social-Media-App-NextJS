@@ -1,8 +1,4 @@
-import { FeedData } from "../feed/page";
-
-interface PostCardProps {
-  post: FeedData; // Assuming FeedData is the type of your post data
-}
+import { PostCardProps } from "@/interfaces/interfaces";
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   return (

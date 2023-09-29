@@ -1,12 +1,5 @@
+import { InputFieldProps } from "@/interfaces/interfaces";
 import React from "react";
-
-interface InputFieldProps {
-  label: string;
-  type: string;
-  placeholder: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
 
 const InputField: React.FC<InputFieldProps> = ({
   label,

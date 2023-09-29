@@ -1,26 +1,20 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import supabase from "../../src/utils/supabase";
+import supabase from "../../../src/utils/supabase";
 import { format_date } from "@/utils/date";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "GET") {
     // Handle GET request to fetch user profiles
     try {
-      const { data: postsData, error: postsError } = await supabase
-        .from("posts")
-        .select("*");
-
-      if (postsError) {
-        throw postsError;
-      }
-
-      const authors = postsData.map((post) => post.author_id);
+      const { userId } = req.query;
 
       const { data: userData, error: userError } = await supabase
         .from("users")
         .select("*")
-        .in("id", authors);
+        .limit(1)
+        .eq("id", userId)
+        .single();
 
       if (userError) {
         throw userError;
@@ -29,38 +23,29 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("*")
-        .in("user_id", authors);
+        .limit(1)
+        .eq("user_id", userId)
+        .single();
 
       if (profileError) {
         throw profileError;
       }
 
-      // const posts = postsData.map((post) => post.id);
+      const { data: posts, error: postsError } = await supabase
+        .from("posts")
+        .select("*")
+        .in("id", profileData.posts);
 
-      // const { data: likesData, error: likesError } = await supabase
-      //   .from("likes")
-      //   .select("*")
-      //   .in("post_id", posts);
+      if (postsError) {
+        throw postsError;
+      }
 
-      // if (likesError) {
-      //   throw likesError;
-      // }
-
-      const combinedData = postsData.map((post) => {
-        const author = userData.find((user) => user.id === post.author_id);
-        const avatar = profileData.find(
-          (profile) => profile.user_id === author.id
-        );
-
+      const postsData = posts.map((post) => {
         const date = format_date(post.created_at);
-
-        // const likes = likesData
-        // ?.filter((like) => like.post_id === post.id)
-        //   .map((item) => item.liker_id);
         return {
           id: post.id,
-          author: author ? author.username : null,
-          avatar: avatar ? avatar.avatar : null,
+          author: userData ? userData.username : null,
+          avatar: profileData ? profileData.avatar : null,
           content: post.content,
           image: post.post_image ? post.post_image : null,
           likesCount: post.likes_count,
@@ -70,9 +55,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         };
       });
 
+      const combinedData = { ...profileData, email: userData.email, postsData };
+
       res.status(200).json(combinedData);
     } catch (error) {
-      res.status(500).json({ error: "Error fetching posts" });
+      res.status(500).json({ error: "Error fetching user profiles" });
     }
   } else {
     // Handle other HTTP methods (e.g., POST for creating user profiles)

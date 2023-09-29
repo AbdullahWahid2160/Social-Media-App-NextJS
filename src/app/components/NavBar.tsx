@@ -1,13 +1,15 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useUser } from "../context/userContext";
 
 export default function FeedNavBar() {
   const [isSticky, setIsSticky] = useState(false);
+  const { userId } = useUser();
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
-    
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       if (currentScrollY > lastScrollY || currentScrollY < 120) {
@@ -43,7 +45,7 @@ export default function FeedNavBar() {
               </li>
               <div className="border-l-2 px-4"></div>
               <li>
-                <Link href="/profile">
+                <Link href={`/profile/${userId}`}>
                   <span className="text-black hover:text-blue-600">
                     Profile
                   </span>

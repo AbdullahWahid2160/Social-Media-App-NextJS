@@ -1,43 +1,66 @@
-import supabase from '@/app/utils/supabase'; // Define your UserProfile type
+// "use client";
+import { getUserProfile } from "@/services/profile";
+import { UserContent } from "./components/content_section";
+import { UserInformation } from "./components/information_section";
+import { ProfileProps, User } from "@/interfaces/interfaces";
+import { UserProfileEditing } from "./components/editing_section";
+import { UserProfileHeader } from "./components/header_section";
 
+const UserProfilePage = async (props: ProfileProps) => {
+  const user: User = await getUserProfile(props.params.username);
 
-// Fetch user profile data from Supabase based on the username
-// async function fetchUserProfile(){
-//   const { data, error } = await supabase
-//     .from('profiles')
-//     .select('id, username, full_name, bio, website')
-//     .eq('username', username)
-//     .single();
+  // Function to handle post expansion
 
-//   if (error) {
-//     console.error('Error fetching user profile:', error);
-//     return null;
-//   }
-
-//   return data;
-// }
-
-// // Define the page component
-const UserProfilePage = () => {
-//   if (!userProfile) {
-//     // Handle case where user profile is not found
-//     return <div>User not found</div>;
-//   }
+  const numColumns = 3;
 
   return (
     <div className="container mx-auto p-4">
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h1 className="text-2xl font-semibold">{"userProfile.username"}</h1>
-        <p className="text-gray-600">{"userProfile.full_name"}</p>
-        <p className="text-gray-600">{"userProfile.bio"}</p>
-        <a
-          href={"userProfile.website"}
-          className="text-blue-500 hover:underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {"userProfile.website"}
-        </a>
+      <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
+        {/* User Profile Header */}
+        <UserProfileHeader user={user} />
+
+        {/* User Stats */}
+        <div className="p-6">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <p className="text-gray-500">Posts</p>
+              <p className="text-2xl font-semibold">{user?.posts?.length}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-gray-500">Followers</p>
+              <p className="text-2xl font-semibold">
+                {user?.followers?.length}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-gray-500">Following</p>
+              <p className="text-2xl font-semibold">
+                {user?.following?.length}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* User Information */}
+        <UserInformation user={user} />
+
+        {/* User Content */}
+        <UserContent userPosts={user.postsData} columns={numColumns} />
+
+        {/* User Profile Details */}
+        <div className="p-6">
+          <h2 className="text-xl font-semibold mb-4">User Details</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-gray-500">Joined</p>
+              <p>{user?.created_at}</p>
+            </div>
+            <div>
+              <p className="text-gray-500">Last Updated</p>
+              <p>{user?.updated_at}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

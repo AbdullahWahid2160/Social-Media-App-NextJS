@@ -15,12 +15,9 @@ export default function FeedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col mx-auto">
+    <div className="flex flex-col mx-auto mt-0">
       <FeedNavBar />
       {children}
     </div>
-    // <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-[#1f6892] to-[#678197]">
-    //   {children}
-    // </div>
   );
 }

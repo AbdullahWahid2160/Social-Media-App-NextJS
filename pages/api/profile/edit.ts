@@ -1,16 +1,23 @@
 import { NextApiRequest, NextApiResponse } from "next";
-
-import supabase from "../../src/utils/supabase";
+import supabase from "../../../src/utils/supabase";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === "GET") {
-    // Handle GET request to fetch user profiles
+  if (req.method === "POST") {
     try {
-      const { data, error } = await supabase.from("users").select("*");
+      const { id, updatedData } = req.body;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .update(updatedData)
+        .eq("user_id", id)
+        .select()
+        .single();
 
       if (error) {
         throw error;
       }
+
+      console.log("Edited Response: ", data);
 
       res.status(200).json(data);
     } catch (error) {

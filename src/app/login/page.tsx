@@ -4,33 +4,16 @@ import InputField from "../components/InputFeild";
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "../context/userContext";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  //   const [showRegister, setShowRegister] = useState(false);
-  const router = useRouter();
+  const { signIn } = useUser();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    try {
-      const response = await axios.post("api/auth/login", {
-        email,
-        password,
-      });
-
-      if (response.status === 200) {
-        console.log("Login successful in component:", response.data);
-        router.push("/feed");
-        // Handle successful login (e.g., redirect to a dashboard)
-      } else {
-        console.error("Login failed:", response.data.error);
-        // Handle login failure (e.g., display an error message)
-      }
-    } catch (error) {
-      console.error("Authentication error:", error);
-    }
+    await signIn(email, password);
   };
   return (
     <div className="bg-white p-8 rounded shadow-md w-full sm:w-96">
@@ -41,14 +24,18 @@ function Login() {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setEmail(e.target.value)
+          }
         />
         <InputField
           label="Password"
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setPassword(e.target.value)
+          }
         />
         <button
           type="submit"
