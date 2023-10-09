@@ -17,8 +17,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       if (error) throw error;
 
-      if (data)
-        res.status(200).json({ message: "Login successful", user: data });
+      if (data) {
+        res.setHeader("Set-Cookie", `user=${data.id}; Path=/; HttpOnly`);
+        res.status(200).json({ message: "Login successful", user: data.id });
+      }
     } catch (error) {
       res.status(500).json({ error: "Error during login" });
     }

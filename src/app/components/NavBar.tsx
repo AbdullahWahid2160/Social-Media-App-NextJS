@@ -27,7 +27,7 @@ export default function FeedNavBar() {
     };
   }, []);
 
-  const navClass = isSticky ? "fixed top-0" : "";
+  const navClass = isSticky ? "sticky top-0" : "";
 
   return (
     <header

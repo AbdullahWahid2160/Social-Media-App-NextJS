@@ -21,8 +21,14 @@ export interface ProfileProps {
   params: { username: string };
 }
 
+export interface Comment {
+  commenter: string;
+  comment: string;
+  created_at: string;
+}
+
 export interface FeedData {
-  id: number;
+  id: string;
   author: string;
   avatar: string;
   content: string;
@@ -30,6 +36,7 @@ export interface FeedData {
   likesCount: number;
   commentsCount: number;
   sharesCount: number;
+  commentDetails: Array<Comment>;
   created_at: string;
 }
 

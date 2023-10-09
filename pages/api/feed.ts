@@ -9,7 +9,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       const { data: postsData, error: postsError } = await supabase
         .from("posts")
-        .select("*");
+        .select("*")
+        .order('updated_at', { ascending: false })
 
       if (postsError) {
         throw postsError;
@@ -35,37 +36,19 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         throw profileError;
       }
 
-      // const posts = postsData.map((post) => post.id);
-
-      // const { data: likesData, error: likesError } = await supabase
-      //   .from("likes")
-      //   .select("*")
-      //   .in("post_id", posts);
-
-      // if (likesError) {
-      //   throw likesError;
-      // }
-
       const combinedData = postsData.map((post) => {
         const author = userData.find((user) => user.id === post.author_id);
         const avatar = profileData.find(
           (profile) => profile.user_id === author.id
         );
 
-        const date = format_date(post.created_at);
+        const date = format_date(post.updated_at);
 
-        // const likes = likesData
-        // ?.filter((like) => like.post_id === post.id)
-        //   .map((item) => item.liker_id);
         return {
           id: post.id,
           author: author ? author.username : null,
           avatar: avatar ? avatar.avatar : null,
           content: post.content,
-          image: post.post_image ? post.post_image : null,
-          likesCount: post.likes_count,
-          commentsCount: post.comments_count,
-          sharesCount: post.shares_count,
           created_at: `${date.toDateString()} ${date.toLocaleTimeString()}`,
         };
       });

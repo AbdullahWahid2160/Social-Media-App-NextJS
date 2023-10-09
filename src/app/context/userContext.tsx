@@ -2,21 +2,26 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { UserContextProps } from "@/interfaces/interfaces";
+import { User, UserContextProps } from "@/interfaces/interfaces";
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
 
 export function useUser() {
   const context = useContext(UserContext);
-  console.log("Context: ", context);
   if (!context) {
     throw new Error("useUser must be used within a UserContextProvider");
   }
   return context;
 }
 
-export function UserContextProvider({ children }: { children: ReactNode }) {
-  const [userId, setUserId] = useState<string>("");
+export function UserContextProvider({
+  children,
+  user,
+}: {
+  children: ReactNode;
+  user: string | undefined;
+}) {
+  const [userId, setUserId] = useState<string>(user ? user : "");
   const router = useRouter();
 
   async function signIn(email: string, password: string) {
@@ -27,8 +32,7 @@ export function UserContextProvider({ children }: { children: ReactNode }) {
       });
 
       if (response.status === 200) {
-        console.log("Login successful in context:", response.data.user.id);
-        setUserId(response.data.user.id);
+        setUserId(response.data.user);
         router.push("/feed");
         // Handle successful login (e.g., redirect to a dashboard)
       } else {
@@ -43,6 +47,22 @@ export function UserContextProvider({ children }: { children: ReactNode }) {
   function signOut() {
     setUserId("");
   }
+
+  // async function getUserProfile(userID: string) {
+  //   try {
+  //     const response = await axios.get(
+  //       `http://localhost:3000/api/profile/${userID}`
+  //     );
+
+  //     if (response.status === 200) {
+  //       return response.data;
+  //     } else {
+  //       console.error("Profile failed:", response.data.error);
+  //     }
+  //   } catch (error) {
+  //     console.error("Unhandled error:", error);
+  //   }
+  // }
 
   return (
     <UserContext.Provider value={{ userId, signIn, signOut }}>
